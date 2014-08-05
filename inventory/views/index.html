@@ -1,0 +1,167 @@
+<html>
+<head>
+	<title>Drift Inventory Management</title>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="IE=Edge,chrome=1" http-equiv="X-UA-Compatible">
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Ubuntu+Mono|Ubuntu:300,400,500,700,400italic,500italic,700italic|Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="public/css/ventures.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="public/js/handlebars-1.1.2.js"></script>
+  <script src="public/js/moment.js"></script>
+  <script src="public/js/ember-1.5.1.js"></script>
+  <script src="public/js/bootstrap.min.js"></script>
+  <script src="public/js/app.js"></script>
+</head>
+<body>
+<div class="body">
+ <script type="text/x-handlebars" data-template-name="application">
+ {{#view App.ApplicationView}}
+ <div class="content">
+  <div class="content-wrapper">
+    <article class="article">
+          <header>
+              <div class="jumbotron">
+                  <h1>Drift</h1>
+                  <p>Simple Inventory Management for Artisans</p>
+                  <p><a class="btn btn-primary btn-lg" role="button" href="#" {{action 'login'}}>Login</a></p>
+              </div>
+          </header>
+        </article>
+  </div>
+</div>
+{{/view}}
+
+</script>
+ <script type="text/x-handlebars" data-template-name="orders">
+
+{{#view App.OrdersView}}
+<div class="content">
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+
+        </div>
+    </div>
+        <p class="nav" align="center" style="padding: 10px;">
+            <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#ordersModal">Add Order</button>
+            <button class="btn btn-default btn-lg">Add Product</button>
+            <button class="btn btn-default btn-lg">Add Transaction</button>
+        </p>
+
+        <article>
+            <p>
+                <header>
+                    <p class="date"><span></span></p>
+                </header>
+
+            </p>
+
+            <div class="row">
+                {{#each order in orders}}
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail" style="height: 200px;">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="caption">
+                                    <h4>{{order.since}}</h4>
+                                    <h6></h6>
+                                    <small class="lead">{{order.created}}</small>
+                                    <p><button class="btn btn-primary" data-toggle="modal" data-target="#editOrderModal" {{action 'editOrderModal' order}}>Edit</button> <a href="#" class="btn btn-default" role="button">Customer</a> <a href="#" class="btn btn-default" role="button" {{action 'deleteOrder' order}}>Delete</a></p>
+
+                                </div>
+                                <span style="color:lightgrey; font-size: 10pt; font-weight: bold;">ORDER ID</span>
+                                <span style="color:lightgrey; font-size: 10pt;">{{order.order_id}}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="well well-sml" style="height: 190px;">
+                                    <dl class="dl-horizontal">
+                                        {{#each product in order.products}}
+                                        <dt>{{product.product_id}}</dt>
+                                        <dd>{{product.quantity}}</dd>
+                                        {{/each}}
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+        </article>
+
+  </div>
+
+     <!-- Orders Modal -->
+     <div class="modal" id="ordersModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                     <h4 class="modal-title" id="myModalLabel">Add Products to New Order</h4>
+                 </div>
+                 <div class="modal-body">
+
+                     <div class="list-group">
+                        {{#each product in orderProducts}}
+                        <li class="list-group-item">
+                            <div class="product">
+                                {{input id=product.product_input placeholder='Product ID...'}} {{input id=product.quantity_input placeholder='Quantity...'}}<a href="#" typ="button" class="btn btn-small" {{action 'deleteProductFromOrder' product}}>Delete</a>
+                            </div>
+                        </li>
+                        {{/each}}
+                     </div>
+
+                         <button type="button" style="padding: 12px;" class="btn btn-small btn-default" {{action 'addProductToOrder'}}>Add Product</button>
+
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                     <button type="button" class="btn btn-primary" {{action 'createOrder'}}>Create</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <!-- Edit Orders Modal -->
+     <div class="modal" id="editOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+                 <div class="modal-header" style="background:none transparent;">
+                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                     <h4 class="modal-title" id="myModalLabel">Edit Order: <span style="color:lightgrey;">{{orderEdit.order_id}}</span></h4>
+                 </div>
+                 <div class="modal-body">
+
+                     <div class="list-group">
+                         {{#each product in orderEdit.products}}
+                         <li class="list-group-item">
+                             <div class="product_edit">
+                                 {{input id=product.product_id valueBinding=product.product_id placeholder="Product ID or SKU..."}} {{input id=product_id valueBinding=product.quantity placeholder="Quantity ordered..."}}<a href="#" typ="button" class="btn btn-small" {{action 'deleteEditProductFromOrder' product}}>Delete</a>
+                             </div>
+                         </li>
+                         {{/each}}
+                     </div>
+
+                     <button type="button" style="padding: 12px;" class="btn btn-small btn-default" {{action 'addEditProductToOrder'}}>Add Product</button>
+
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                     <button type="button" class="btn btn-primary" data-dismiss="modal" {{action 'saveOrderEdit'}}>Save</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+
+{{/view}}
+</script>
+
+
+
+</body>
+</html>
